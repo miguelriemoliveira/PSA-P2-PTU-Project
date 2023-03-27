@@ -9,7 +9,7 @@
 
 # RS232 Communication parameters
 
-9600 baud rate
+9600 baud rate (using 38400)
 8 bits data
 1 stop bit
 1 start bit
