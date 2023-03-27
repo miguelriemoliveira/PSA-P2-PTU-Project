@@ -14,3 +14,5 @@
 1 stop bit
 1 start bit
 no parity
+
+If you want more information about RS232, feel free to watch [this video](https://www.youtube.com/watch?v=AHYNxpqKqwo).
