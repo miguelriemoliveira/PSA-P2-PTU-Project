@@ -5,7 +5,8 @@ import cv2 as cv
 
 def main():
     cap = cv.VideoCapture(0) #TODO, verify if this value is correct in intel NUC
-
+    print('Detecting people...')
+    
     #pre-trained frontal face classifier
     face_cascade = cv.CascadeClassifier('haarcascade_frontalface_default.xml')
 
