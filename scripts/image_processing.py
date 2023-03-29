@@ -6,6 +6,9 @@ import cv2 as cv
 def main():
     cap = cv.VideoCapture(0) #TODO, verify if this value is correct in intel NUC
 
+    #pre-trained frontal face classifier
+    face_cascade = cv.CascadeClassifier('haarcascade_frontalface_default.xml')
+
     if not cap.isOpened():
         print("Cannot open camera")
         exit()
@@ -19,8 +22,19 @@ def main():
             print("Can't receive frame (stream end?). Exiting ...")
             break
 
+
         # Display the resulting frame
+        
+        #Detect faces present in the frame
+        gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+
+        # Draw a frame around the face of each detected person
+        for (x, y, w, h) in faces:
+            cv.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
         cv.imshow('frame', frame)
+
         if cv.waitKey(1) == ord('q'):
             break
 
