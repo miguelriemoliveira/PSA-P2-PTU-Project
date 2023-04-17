@@ -19,4 +19,5 @@ If you want more information about RS232, feel free to watch [this video](https:
 
 # image_processing
 - opencv have some pre-trained algorithms to identifie faces.
-
+- it's necessary to create a folder (images) where we will store some faces so the programe can compare and identify 
+ 
