@@ -1,3 +1,0 @@
-from mpyg321.MPyg123Player import MPyg123Player
-player = MPyg123Player()
-player.play_song("/path/to/some_mp3.mp3")
