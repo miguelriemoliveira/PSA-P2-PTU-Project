@@ -80,17 +80,12 @@ def main():
         gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)
         
-        # Draw a frame around the face of each detected person
+        # Build list of detections
         count=0
         detections=[]
         for (x, y, w, h) in faces:
             detection= {'id': count,'x': x, 'y':y,'w':w,'h':h, 'frame':frame_count}
             detections.append(detection)
-            cv.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-            #iou_score= calculate_iou((x), box2)
-            cv.putText(frame, 'f ' + str(frame_count) + ' d ' + str(count), (x,y-20), 
-                       cv.FONT_HERSHEY_PLAIN, 1, (0,0,255), 1) #TODO create a way to compare real time image with photo
-
             count +=1
 
         #print(detections)
@@ -122,8 +117,8 @@ def main():
                 objects.append(o)
                 object_count+=1
 
-        print('\n\n\n')
-        print(objects)    
+        # print('\n\n\n')
+        # print(objects)    
 
         #TODO object rectangle drawing
 
@@ -131,10 +126,26 @@ def main():
         #VISUALIZATIOM
         #-------------------------------------
         
+        
+
+        #Draw all objects
+        for o in objects:
+            detection= o['detections'][-1]
+            cv.rectangle(frame, (detection['x'],detection['y']), (detection['x']+detection['w'], detection['y']+detection['h']), (0,0,255), 3)
+            cv.putText(frame, 'o ' + str(o['id']), (detection['x'],detection['y']-10), 
+                       cv.FONT_HERSHEY_PLAIN, 1, (0,0,255), 2) 
+
+        #Draw all detections
+        for detection_idx, detection in enumerate(detections):
+            cv.rectangle(frame, (detection['x'],detection['y']), (detection['x']+detection['w'], detection['y']+detection['h']), (0, 255, 0), 1)
+            cv.putText(frame, 'f ' + str(frame_count) + ' d ' + str(detection_idx), (detection['x'],detection['y']-20), 
+                       cv.FONT_HERSHEY_PLAIN, 1, (0,255,0), 2) 
+
+
         cv.imshow('frame', frame)
 
 
-        if cv.waitKey(500) == ord('q'):
+        if cv.waitKey(20) == ord('q'):
             break
 
         frame_count +=1
