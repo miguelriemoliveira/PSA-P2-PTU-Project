@@ -15,9 +15,12 @@ pipreqs /path/to/project
 ``` 
 
 
-## GTKTerm
+## Other dependencies
 
+    sudo apt-get update
     sudo apt-get install gtkterm
+    sudo apt-get install mpg321
+    
 
 # RS232 Communication parameters
 
