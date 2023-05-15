@@ -7,7 +7,16 @@ import math
 import time
 import face_recognition
 import pickle
+import socket
+from threading import Thread
+import json
+from copy import deepcopy
 
+maximum_distance_for_association = 300
+time_to_turn_innactive = 1
+
+objects=[] # global variable to be accecible by two functions
+ 
 def most_frequent(List):
     counter = 0
     num = List[0]
@@ -20,37 +29,52 @@ def most_frequent(List):
  
     return num
 
+def on_new_client(clientsocket,addr):
+    global objects
 
-def main():
+    while True:
+        msg = json.loads(clientsocket.recv(1024).decode())
+        print('received request')
 
-    #open pickle file with known face encodings 
-    with open('/home/joao/Desktop/PSA/PSA-P2-PTU-Project/scripts/poject_image/encodings.pickle', 'rb') as handle:
-        knowledge= pickle.load(handle)
+        # Create a dictionary of tracked persons to send
+        # lets call it a simplified objects or sobjects
 
+        sobjects = []
+        for o in objects:
+            if not o['active']: # skip non active objects
+                continue
 
+            so = deepcopy(o)
+            so['detection'] = so['detections'][-1]
+            del so['detections']
+            sobjects.append(so)
 
-    cap = cv.VideoCapture(2) #TODO, verify if this value is correct in intel NUC
-    print('opening camera...')
-    
-    if not cap.isOpened():
-        print("Cannot open camera")
-        exit()
+        # send the simplified version sobjects
+        clientsocket.send(json.dumps(sobjects).encode())
+        
 
-    # #pre-trained frontal face classifier
-    # face_cascade = cv.CascadeClassifier('/home/joao/Desktop/PSA/PSA-P2-PTU-Project/scripts/poject_image/haarcascade_frontalface_default.xml')
+    clientsocket.close()
 
+def image_processing(clientsocket, cap, knowledge):
 
-    objects=[]
+    global objects
+    global time_to_turn_innactive
+    global maximum_distance_for_association
+   
     frame_count=0
     object_count=0
     while True:
+        # Process image
         # Capture frame-by-frame
         ret, frame = cap.read()
+        
+        
         # if frame is read correctly ret is True
         if not ret:
             print("Can't receive frame (stream end?). Exiting ...")
             break
 
+        print('image_processing ...')
         
         # Display the resulting frame
         
@@ -110,7 +134,8 @@ def main():
                 dist= distance_centers(detection['x'],detection['y'],
                                  last_detection['x'],last_detection['y'])
 
-                if dist < 50:
+                # associate detection with object
+                if dist < maximum_distance_for_association and detection['name'] == o['name']:
                     o['detections'].append(detection)
                     associated=True
                     break
@@ -132,15 +157,11 @@ def main():
                 
             o['name']=most_frequent(names)
 
- 
-        
-
-
         #update active objects
         for o in objects:
             detection= o['detections'][-1]
             elapsed_time = time.time() - detection['stamp']
-            if elapsed_time > 3 :
+            if elapsed_time >  time_to_turn_innactive:
                 o['active']= False
 
 
@@ -178,6 +199,61 @@ def main():
             break
 
         frame_count +=1
+
+
+    clientsocket.close()
+
+
+
+def main():
+
+    #open pickle file with known face encodings 
+    with open('/home/joao/Desktop/PSA/PSA-P2-PTU-Project/scripts/poject_image/encodings.pickle', 'rb') as handle:
+        knowledge= pickle.load(handle)
+
+    cap = cv.VideoCapture(2) #TODO, verify if this value is correct in intel NUC
+    print('opening camera...')
+    
+    if not cap.isOpened():
+        print("Cannot open camera")
+        exit()
+
+    # Configuration of parameters
+    max_number_of_clients = 1
+    number_connected_clients = 0
+
+    # Initialization of socket communication
+    my_socket = socket.socket()         # Create a socket object
+    host = socket.gethostname() # Get local machine name
+    port = 8081             # Reserve a port for your service.
+
+    # start a thread for image processing
+    image_processing_thread = Thread(target=image_processing,args=(my_socket, cap, knowledge))
+    image_processing_thread.start()
+
+
+    my_socket.bind((host, port))        # Bind to the port
+    my_socket.listen(2)                 # Now wait for client connection.
+    print('Server started!')
+    print('Waiting for clients...')
+
+    
+    while True:
+        # Handle new client connections
+        c, addr = my_socket.accept()     # Establish connection with client.
+        if number_connected_clients == max_number_of_clients:
+            c.close()
+            print('Refused connection from ' + str(addr) + '. Too many clients.')
+            continue
+
+        print('Got connection from ' + str(addr))
+        new_thread = Thread(target=on_new_client,args=(c,addr))
+        new_thread.start()
+        number_connected_clients += 1
+
+    # end of while
+    
+    my_socket.close()
 
     # When everything done, release the capture
     cap.release()
