@@ -74,7 +74,7 @@ def image_processing(clientsocket, cap, knowledge):
             print("Can't receive frame (stream end?). Exiting ...")
             break
 
-        print('image_processing ...')
+        # print('image_processing ...')
         
         # Display the resulting frame
         
