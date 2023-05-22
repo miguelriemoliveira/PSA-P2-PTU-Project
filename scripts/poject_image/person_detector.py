@@ -217,7 +217,7 @@ def main():
     with open('encodings.pickle', 'rb') as handle:
         knowledge= pickle.load(handle)
 
-    cap = cv.VideoCapture(0) #TODO, verify if this value is correct in intel NUC
+    cap = cv.VideoCapture(2) #TODO, verify if this value is correct in intel NUC
     print('opening camera...')
     
     if not cap.isOpened():
