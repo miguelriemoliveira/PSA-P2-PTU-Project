@@ -102,13 +102,8 @@ def image_processing(clientsocket, cap, knowledge):
             for distance in distances:
                 summed_distances.append(sum(distance))
 
-            #alteração
-
-            if min(summed_distances)> 5:
-                name= 'unknown person'
-            else:
-                idx_min= summed_distances.index(min(summed_distances))
-                name= knowledge['labels'][idx_min]
+            idx_min= summed_distances.index(min(summed_distances))
+            name= knowledge['labels'][idx_min]
 
             # Build list of detections
             top, right, bottom, left = frame_detection
@@ -129,7 +124,7 @@ def image_processing(clientsocket, cap, knowledge):
             distance= math.sqrt((x1-x2)**2+(y1-y2)**2)
             return distance
             
-        for detection in detections: #assciate detection to an object
+        for detection in detections: #associate detection to an object
             associated= False
             for o in objects:
                 if not o['active']:
@@ -161,6 +156,9 @@ def image_processing(clientsocket, cap, knowledge):
                 names.append(detection['name'])
                 
             o['name']=most_frequent(names)
+            # verifi if is a unknown person
+            if o['name'] == 'unknown':
+                print('unknown person detected!')
 
         #update active objects
         for o in objects:
