@@ -50,3 +50,14 @@ If you want more information about RS232, feel free to watch [this video](https:
 - import socket
 - defenition of function main
 - 
+
+# ptu server/client
+For server:
+
+    python3 scripts/project_ptu/ptu_server.py
+
+For client:
+
+    python3 scripts/project_ptu/ptu_client.py
+
+    
