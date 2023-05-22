@@ -21,22 +21,32 @@ def main():
     voice_messages = ['ola', 'bom dia', 'adeus']
 
     # Image initialization
+    image_host = socket.gethostname() #as both code is running on same pc
+    image_port = 8081  #socket server port number
+    image_client_socket = socket.socket() #instantiate
+    image_client_socket.connect((image_host,image_port)) #connect to the server
+    image_message = {'request': 'empty'} #take input
+
+    # PTU initialization
     host = socket.gethostname() #as both code is running on same pc
-    port = 8081  #socket server port number
+    port = 8082  #socket server port number
+
     client_socket = socket.socket() #instantiate
     client_socket.connect((host,port)) #connect to the server
-    message = {'request': 'empty'} #take input
+
+
 
     # ---------------------------------------
     # Execution
     # ---------------------------------------
     persons_in_scene = {}
+    following_person = ''
 
     voice_message_idx = 0
     while True:
 
-        client_socket.send(json.dumps(message).encode()) #send message
-        data = (client_socket.recv(4098).decode()) #receive response
+        image_client_socket.send(json.dumps(image_message).encode()) #send message
+        data = (image_client_socket.recv(4098).decode()) #receive response
         print ('Received from server:  '+data) #show in terminal
 
         # convert message to sobjects dictionary
@@ -48,10 +58,14 @@ def main():
                 voice_client_socket.send(voice_message.encode()) #send message
                 voice_response = voice_client_socket.recv(1024).decode() #receive response             
                 persons_in_scene[so['name']] = {'stamp': time.time()}
+                following_person=so['name']
             else:
                 persons_in_scene[so['name']]['stamp'] = time.time()
 
-        print(persons_in_scene)    
+
+        print('i am following ' + following_person)
+        
+        #print(persons_in_scene)    
         # remove persons from scene
         keys_to_remove = []
         for person_in_scene_key, person_in_scene in persons_in_scene.items(): # add a new person to the scene
@@ -62,7 +76,8 @@ def main():
                 
         for key in keys_to_remove:
             del persons_in_scene[key]
-
+            following_person = ''
+        
         # Draw an image with the bboxes
         # create an empty image just to show the bboxes that we'll receive
         frame = np.zeros((480,640,3), dtype=np.uint8)        
@@ -77,6 +92,14 @@ def main():
         
         if cv.waitKey(20) == ord('q'):
             break
+        
+        #PTU execution
+        
+        message = {'Pan':0 , 'Tilt':0} #take input
+        client_socket.send(json.dumps(message).encode()) #send message
+        data = (client_socket.recv(1024).decode()) #receive response
+
+        print ('Received from server:  '+data) #show in terminal
 
               
 
@@ -97,7 +120,7 @@ def main():
     # Termination
     # ---------------------------------------
     voice_client_socket.close() #close connection
-    client_socket.close() #close connection
+    image_client_socket.close() #close connection
 
 if __name__ == "__main__":
     main()
