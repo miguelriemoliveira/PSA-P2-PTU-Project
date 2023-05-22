@@ -25,5 +25,6 @@ for class_folder in class_folders:
         knowledge['encodings'].append(face_recognition.face_encodings(img))
         knowledge['labels'].append(class_folder)
  
-file_to_write = open("/home/joao/Desktop/PSA/PSA-P2-PTU-Project/scripts/poject_image/encodings.pickle", "wb")
+#file_to_write = open("/home/joao/Desktop/PSA/PSA-P2-PTU-Project/scripts/poject_image/encodings.pickle", "wb")
+file_to_write = open("encodings.pickle", "wb")
 pickle.dump(knowledge, file_to_write)

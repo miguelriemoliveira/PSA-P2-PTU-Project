@@ -208,7 +208,8 @@ def image_processing(clientsocket, cap, knowledge):
 def main():
 
     #open pickle file with known face encodings 
-    with open('/home/joao/Desktop/PSA/PSA-P2-PTU-Project/scripts/poject_image/encodings.pickle', 'rb') as handle:
+    # with open('/home/joao/Desktop/PSA/PSA-P2-PTU-Project/scripts/poject_image/encodings.pickle', 'rb') as handle:
+    with open('encodings.pickle', 'rb') as handle:
         knowledge= pickle.load(handle)
 
     cap = cv.VideoCapture(2) #TODO, verify if this value is correct in intel NUC
