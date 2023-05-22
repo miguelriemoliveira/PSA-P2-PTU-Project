@@ -32,7 +32,16 @@ no parity
 
 If you want more information about RS232, feel free to watch [this video](https://www.youtube.com/watch?v=AHYNxpqKqwo).
 
-# image_processing
+# person_detector
+To run `person_detector` follow this steps:
+
+1. run `create_encodings.py` to create encodings of known faces ( known faces are locted in `faces`) and genarate a pickle file `encodings.pickle`
+2. run `person_detector`
+    - this code will get face encodings form `encodings.pickle`
+    - then will open camera and read frame
+
+
+
 - opencv have some pre-trained algorithms to identifie faces.
 - it's necessary to create a folder (images) where we will store some faces so the programe can compare and identify 
  
