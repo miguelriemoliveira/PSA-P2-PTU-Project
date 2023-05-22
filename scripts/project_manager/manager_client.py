@@ -1,25 +1,47 @@
 #!/usr/bin/env python3
 
 import socket
+from time import sleep
 
 def main():
-    host = socket.gethostname() #as both code is running on same pc
-    port = 8080  #socket server port number
 
-    client_socket = socket.socket() #instantiate
-    client_socket.connect((host,port)) #connect to the server
+    # ---------------------------------------
+    # Initialization
+    # ---------------------------------------
+    voice_host = socket.gethostname() #as both code is running on same pc
+    voice_port = 8080  #socket server port number
 
-    message = input ("-> ") #take input
+    voice_client_socket = socket.socket() #instantiate
+    voice_client_socket.connect((voice_host,voice_port)) #connect to the server
 
-    while message.lower().strip() !='bye':
-        client_socket.send(message.encode()) #send message
-        data = client_socket.recv(1024).decode() #receive response
+    voice_messages = ['ola', 'bom dia', 'adeus']
+    # ---------------------------------------
+    # Execution
+    # ---------------------------------------
+    
 
-        print ('Received from server:  '+data) #show in terminal
+    voice_message_idx = 0
+    while True:
 
-        message = input ("-> ") # again take input
+        if voice_message_idx > 2: # reset voice_message_idx
+            voice_message_idx = 0
+        voice_message = voice_messages[voice_message_idx]
+        voice_message_idx += 1
 
-    client_socket.close() #close connection
+
+        # Send voice message
+        voice_client_socket.send(voice_message.encode()) #send message
+        voice_response = voice_client_socket.recv(1024).decode() #receive response
+
+        print('Received from server:  '+voice_response) #show in terminal
+
+        sleep(2)
+
+
+    # ---------------------------------------
+    # Termination
+    # ---------------------------------------
+    voice_client_socket.close() #close connection
 
 if __name__ == "__main__":
     main()
