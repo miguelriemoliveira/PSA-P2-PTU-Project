@@ -21,7 +21,7 @@ def main():
         data = (client_socket.recv(4098).decode()) #receive response
         print ('Received from server:  '+data) #show in terminal
 
-        # convert mesage to sobjects dictionary
+        # convert message to sobjects dictionary
         sobjects = json.loads(data)
 
         # create an empty image just to show the bboxes that we'll receive
