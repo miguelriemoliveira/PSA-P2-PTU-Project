@@ -68,14 +68,20 @@ def on_new_client(clientsocket, addr, ser):
     min_angle_tilt = -47
     max_angle_tilt = 31
 
+    pan_sa = (max_steps_pan - min_steps_pan)/(max_angle_pan - min_angle_pan)
+    tilt_sa = (max_steps_tilt - min_steps_tilt)/(max_angle_tilt - min_angle_tilt)
+
+
     while True:
         # Receive and process messages from the client
         msg = json.loads(clientsocket.recv(1024).decode())
         clientsocket.send('Message received'.encode())
 
         # Map angle values to steps based on defined ranges
-        steps_pan = map_value(msg['Pan'], min_angle_pan, max_angle_pan, min_steps_pan, max_steps_pan)
-        steps_tilt = map_value(msg['Tilt'], min_angle_tilt, max_angle_tilt, min_steps_tilt, max_steps_tilt)
+        #steps_pan = map_value(msg['Pan'], min_angle_pan, max_angle_pan, min_steps_pan, max_steps_pan)
+        #steps_tilt = map_value(msg['Tilt'], min_angle_tilt, max_angle_tilt, min_steps_tilt, max_steps_tilt)
+        steps_pan = map_value(msg['Pan']) * pan_sa
+        steps_tilt = map_value(msg['Tilt']) * tilt_sa
 
         # Construct and send the serial command
         serial_input = f"po{int(steps_pan)} to{int(steps_tilt)}\n"
