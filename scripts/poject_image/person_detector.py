@@ -102,8 +102,13 @@ def image_processing(clientsocket, cap, knowledge):
             for distance in distances:
                 summed_distances.append(sum(distance))
 
-            idx_min= summed_distances.index(min(summed_distances))
-            name= knowledge['labels'][idx_min]
+            #alteração
+
+            if min(summed_distances)> 5:
+                name= 'unknown person'
+            else:
+                idx_min= summed_distances.index(min(summed_distances))
+                name= knowledge['labels'][idx_min]
 
             # Build list of detections
             top, right, bottom, left = frame_detection
@@ -212,7 +217,7 @@ def main():
     with open('encodings.pickle', 'rb') as handle:
         knowledge= pickle.load(handle)
 
-    cap = cv.VideoCapture(2) #TODO, verify if this value is correct in intel NUC
+    cap = cv.VideoCapture(0) #TODO, verify if this value is correct in intel NUC
     print('opening camera...')
     
     if not cap.isOpened():
