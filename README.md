@@ -58,7 +58,6 @@ To run `person_detector` follow this steps:
 
 - import socket
 - defenition of function main
-- 
 
 # ptu server/client
 For server:
