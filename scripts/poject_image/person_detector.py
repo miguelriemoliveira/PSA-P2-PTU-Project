@@ -68,12 +68,13 @@ def image_processing(clientsocket, cap, knowledge):
         # Capture frame-by-frame
         ret, frame = cap.read()
         
-        
         # if frame is read correctly ret is True
         if not ret:
             print("Can't receive frame (stream end?). Exiting ...")
             break
 
+        frame = cv.pyrDown(frame)
+        
         # print('image_processing ...')
         
         # Display the resulting frame
@@ -200,7 +201,7 @@ def image_processing(clientsocket, cap, knowledge):
         cv.imshow('frame', frame)
 
 
-        if cv.waitKey(20) == ord('q'):
+        if cv.waitKey(10) == ord('q'):
             break
 
         frame_count +=1

@@ -125,9 +125,9 @@ def main():
     )
 
     # Initialize the serial connection
-    ser.write('RP\n'.encode())
-    time.sleep(15)
-    print('Serial connection defined')
+    # ser.write('RP\n'.encode())
+    # time.sleep(15)
+    # print('Serial connection defined')
 
     # Define a signal handler for safe script termination
     handler_partial = partial(handler, serial=ser)
