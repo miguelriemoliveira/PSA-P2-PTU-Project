@@ -30,7 +30,26 @@ def handler(signal_received, frame, serial):
     print('Safely closed')
     exit(0)
 
+def serial_send(ser, serial_input):
+    ser.write(serial_input.encode())
+    print('Sending message')
+
+    out = ''
+
+    # Read serial output from the device
+    while True:
+        try:
+            print('Attempting to read')
+            time.sleep(1)
+            out += ser.readline().decode()
+            print(out)
+            break
+        except:
+            pass
+
+        ser.flush()
     
+    return out
 
 def map_value(value, in_min, in_max, out_min, out_max):
     # Normalize the input value
@@ -68,36 +87,24 @@ def on_new_client(clientsocket, addr, ser):
     min_angle_tilt = -47
     max_angle_tilt = 31
 
+
+    pan_sa = (max_steps_pan - min_steps_pan)/(max_angle_pan - min_angle_pan)
+    tilt_sa = (max_steps_tilt - min_steps_tilt)/(max_angle_tilt - min_angle_tilt)
+
     while True:
         # Receive and process messages from the client
         msg = json.loads(clientsocket.recv(1024).decode())
         clientsocket.send('Message received'.encode())
 
         # Map angle values to steps based on defined ranges
-        steps_pan = map_value(msg['Pan'], min_angle_pan, max_angle_pan, min_steps_pan, max_steps_pan)
-        steps_tilt = map_value(msg['Tilt'], min_angle_tilt, max_angle_tilt, min_steps_tilt, max_steps_tilt)
+        steps_pan = msg['Pan'] * pan_sa
+        steps_tilt = msg['Tilt'] * tilt_sa
+        
 
         # Construct and send the serial command
         serial_input = f"po{int(steps_pan)} to{int(steps_tilt)}\n"
-        print(serial_input)
-        ser.write(serial_input.encode())
-        print('Sending pan message')
-        print(msg)
+        out = serial_send(ser, serial_input)
 
-        out = ''
-
-        # Read serial output from the device
-        while True:
-            try:
-                print('Attempting to read')
-                out += ser.readline().decode()
-                time.sleep(1)
-                print(out)
-                break
-            except:
-                pass
-
-            ser.flush()
 
     # Close the client socket
     clientsocket.close()

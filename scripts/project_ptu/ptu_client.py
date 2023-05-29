@@ -11,7 +11,7 @@ def main():
     client_socket = socket.socket() #instantiate
     client_socket.connect((host,port)) #connect to the server
 
-    message = {'Pan':159 , 'Tilt':20} #take input
+    message = {'Pan':159 , 'Tilt':0} #take input
 
     while True:
         client_socket.send(json.dumps(message).encode()) #send message
@@ -19,13 +19,13 @@ def main():
 
         print ('Received from server:  '+data) #show in terminal
 
-        if message == {'Pan':159 , 'Tilt':20}:
+        if message == {'Pan':159 , 'Tilt':0}:
             time.sleep(10)
-            message = {'Pan':-159 , 'Tilt':-40}
+            message = {'Pan':-159 , 'Tilt':0}
 
-        elif message == {'Pan':-159, 'Tilt':-40}:
+        elif message == {'Pan':-159, 'Tilt':0}:
             time.sleep(10)
-            message = {'Pan':159 , 'Tilt':20}
+            message = {'Pan':159 , 'Tilt':0}
 
 
     client_socket.close() #close connection
