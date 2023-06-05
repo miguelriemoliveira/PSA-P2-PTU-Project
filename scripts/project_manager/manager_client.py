@@ -50,7 +50,7 @@ def main():
 
     # Voice options
     voice_message_idx = 0
-    hello_options = ['Bom dia ', 'Olá ', 'Tudo bem ', 'Oi ', 'Olha o ', 'Estou ta ver ', 'Boas ']
+    hello_options = ['Bom dia ', 'Olá ', 'Tudo bem ', 'Oi ', 'Olha o ', 'Estou te a ver ', 'Boas ']
     following_options = ['Estou a seguir-te ', 'Anda cá ', 'Vou atrás de ti ', 'Não fujas ', 'Vou te apanhar ']
     goodbye_options = ['Xauzão ', 'Adeus ', 'Até à próxima ', 'Volte sempre ', 'Fica bem ']
 
