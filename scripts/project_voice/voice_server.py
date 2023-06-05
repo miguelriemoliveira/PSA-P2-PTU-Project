@@ -16,30 +16,70 @@ from gtts import gTTS
 import os
 
 
-def on_new_client(clientsocket,addr):
-    """Launched to tackle the communication with every new client
-    """
+def generate_and_play_sound():
+    global config
+    # Language in which you want to convert
+    language = 'pt'
 
-    while True: # Attending to the client's messages
-        msg = clientsocket.recv(1024).decode()
-        clientsocket.send('Message received'.encode())
-        # Language in which you want to convert
-        language = 'pt'
-        
-        tld="pt"
+    tld="pt"
+
+    while True:
+
+        if len(config['msg']) == 0:
+            continue
 
         # Passing the text and language to the engine, 
         # here we have marked slow=False. Which tells 
         # the module that the converted audio should 
         # have a high speed
-        myobj = gTTS(text=msg, lang=language, tld=tld, slow=False)
-        
+        myobj = gTTS(text=config['msg'][0], lang=language, tld=tld, slow=False)
+
         # Saving the converted audio in a mp3 file named
         # welcome 
         myobj.save("welcome.mp3")
-        
+
         # Playing the converted file
-        os.system("mpg321 welcome.mp3")
+        os.system("mpg321 welcome.mp3 > /dev/null 2>&1")
+
+        config['msg'].pop(0)
+
+
+
+def on_new_client(clientsocket,addr):
+    """Launched to tackle the communication with every new client
+    """
+    global config
+    config = dict()
+    config['msg'] = []
+
+    new_thread = Thread(target=generate_and_play_sound)
+    new_thread.start()
+
+
+    while True: # Attending to the client's messages
+        msg = clientsocket.recv(1024).decode()
+        clientsocket.send('Message received'.encode())
+        print('Message Received')
+        config['msg'].append(msg)
+
+
+        # # Language in which you want to convert
+        # language = 'pt'
+        
+        # tld="pt"
+
+        # # Passing the text and language to the engine, 
+        # # here we have marked slow=False. Which tells 
+        # # the module that the converted audio should 
+        # # have a high speed
+        # myobj = gTTS(text=msg, lang=language, tld=tld, slow=False)
+        
+        # # Saving the converted audio in a mp3 file named
+        # # welcome 
+        # myobj.save("welcome.mp3")
+        
+        # # Playing the converted file
+        # os.system("mpg321 welcome.mp3")
 
 
     clientsocket.close()
